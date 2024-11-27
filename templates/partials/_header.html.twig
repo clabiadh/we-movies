@@ -1,0 +1,12 @@
+<header class="header">
+    <h1>A propos de We Movies</h1>
+    <div class="search-bar">
+        <form action="{{ path('app_main') }}" method="get" id="search-form">
+            <input type="text" id="search-input" name="search" placeholder="Rechercher un film..." value="{{ search }}" class="w-full p-2 pr-10 border rounded-md" autocomplete="off">
+            <button type="submit" id="search-button" class="absolute right-2 top-1/2 transform -translate-y-1/2">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+        <div id="autocomplete-results" class="absolute z-10 w-full bg-white border rounded-md shadow-lg hidden"></div>
+    </div>
+</header>

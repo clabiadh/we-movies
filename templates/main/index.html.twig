@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}We Movies{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {# Include the header partial #}
+        {% include 'partials/_header.html.twig' %}
+
+        <div class="main-content">
+            {# Include the featured movie partial #}
+            {% include 'partials/_featured_movie.html.twig' %}
+
+            <div class="content-wrapper">
+                {# Include the sidebar partial #}
+                {% include 'partials/_sidebar.html.twig' %}
+
+                {# Include the movie list partial #}
+                {% include 'partials/_movie_list.html.twig' %}
+            </div>
+        </div>
+    </div>
+
+    {# Include the modal partial #}
+    {% include 'partials/_modal.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/app.js') }}"></script>
+{% endblock %}

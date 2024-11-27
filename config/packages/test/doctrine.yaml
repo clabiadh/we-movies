@@ -1,0 +1,4 @@
+doctrine:
+  dbal:
+    # configure a separate test database
+    url: '%env(resolve:DATABASE_URL)%'

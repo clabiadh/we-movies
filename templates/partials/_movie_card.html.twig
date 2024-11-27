@@ -1,0 +1,36 @@
+<article class="movie-card" data-movie-id="{{ movie.id }}">
+    <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+    <div class="movie-info">
+        <div class="movie-header">
+            <h3>{{ movie.title }}</h3>
+            <div class="rating">
+                <div class="stars">
+                    {% set rating = movie.vote_average / 2 %}
+                    {% for i in 1..5 %}
+                        {% if i <= rating|round(0, 'floor') %}
+                            <i class="fas fa-star"></i>
+                        {% elseif i - 0.5 <= rating %}
+                            <i class="fas fa-star-half-alt"></i>
+                        {% else %}
+                            <i class="fas fa-star" style="color: #e4e5e9;"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="votes">({{ movie.vote_count }} votes)</span>
+            </div>
+        </div>
+        <span class="year">{{ movie.release_date|date('Y') }}</span>
+        <div class="user-rating" data-movie-id="{{ movie.id }}">
+            <p>Votre note :</p>
+            <div class="user-stars">
+                {% for i in 1..5 %}
+                    <i class="fas fa-star user-star" data-rating="{{ i }}"></i>
+                {% endfor %}
+            </div>
+        </div>
+        <p class="description">
+            {{ movie.overview|length > 150 ? movie.overview|slice(0, 150) ~ '...' : movie.overview }}
+        </p>
+        <button class="details-button">Lire les détails</button>
+    </div>
+</article>

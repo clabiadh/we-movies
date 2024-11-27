@@ -1,0 +1,16 @@
+{% if featuredMovie %}
+    <div class="video-player" data-movie-id="{{ featuredMovie.id }}">
+        <img src="https://image.tmdb.org/t/p/w1280{{ featuredMovie.backdrop_path }}" alt="{{ featuredMovie.title }}">
+        <div class="play-button">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="video-info">
+            <h2>{{ featuredMovie.title }}</h2>
+            <p>{{ featuredMovie.title }} Bande-annonce VF</p>
+        </div>
+    </div>
+{% else %}
+    <div class="error-message">
+        <p>Désolé, aucun film n'a été trouvé ou il y a eu un problème de chargement. Veuillez réessayer ou choisir un autre film.</p>
+    </div>
+{% endif %}

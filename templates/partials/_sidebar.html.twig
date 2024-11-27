@@ -1,0 +1,17 @@
+{# templates/partials/_sidebar.html.twig #}
+<aside class="sidebar">
+    <button id="reset-filters" class="reset-filters-button mb-4 w-full">
+        Réinitialiser les filtres
+    </button>
+    <form id="genre-form" action="{{ path('app_main') }}" method="get">
+        <div class="genre-filters">
+            {% for genre in genres %}
+                <label class="checkbox-container">
+                    <input type="radio" name="genre" value="{{ genre.id }}" {% if genre.id == selectedGenre %}checked{% endif %}>
+                    <span class="checkmark"></span>
+                    {{ genre.name }}
+                </label>
+            {% endfor %}
+        </div>
+    </form>
+</aside>

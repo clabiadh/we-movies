@@ -1,0 +1,5 @@
+<main class="movie-list">
+    {% for movie in movies %}
+        {% include 'partials/_movie_card.html.twig' with {'movie': movie} %}
+    {% endfor %}
+</main>

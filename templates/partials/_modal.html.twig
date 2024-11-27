@@ -1,0 +1,24 @@
+<div id="trailer-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="video-container">
+            <iframe id="trailer-video" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="video-info">
+            <h2 id="modal-title"></h2>
+            <div class="rating">
+                <div id="modal-stars" class="stars"></div>
+                <span id="modal-votes" class="votes"></span>
+            </div>
+            <div id="modal-user-rating" class="user-rating">
+                <p>Votre note :</p>
+                <div class="user-stars">
+                    {% for i in 1..5 %}
+                        <i class="fas fa-star user-star" data-rating="{{ i }}"></i>
+                    {% endfor %}
+                </div>
+            </div>
+            <p id="modal-overview"></p>
+        </div>
+    </div>
+</div>
