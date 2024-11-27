@@ -5,12 +5,6 @@ namespace App\Serializer;
 use App\DTO\GenreDTO;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-/**
- * Created by PhpStorm.
- * User: LABIADH Chiheb ( labiadh.chiheb@gmail.com )
- * Date: 27/11/2024
- * Time: 12:18
- */
 class GenreDTONormalizer implements NormalizerInterface
 {
     /**

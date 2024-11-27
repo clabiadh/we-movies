@@ -2,18 +2,19 @@
 
 namespace App\Service;
 
+use App\Service\Interface\ApiDataServiceInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class ApiDataService
+class ApiDataService implements ApiDataServiceInterface
 {
     public function __construct(
         #[Autowire(service: 'tmdb.client')]
-        private HttpClientInterface $tmdbClient,
+        private readonly HttpClientInterface $tmdbClient,
         #[Autowire('%env(TMDB_API_TOKEN)%')]
-        private string $apiToken,
-        private LoggerInterface $logger,
+        private readonly string $apiToken,
+        private readonly LoggerInterface $logger,
     ) {
     }
 

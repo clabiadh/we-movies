@@ -1,7 +1,5 @@
 <?php
 
-// src/Service/MovieService.php
-
 namespace App\Service;
 
 use App\DTO\AutocompleteResultDTO;
@@ -12,16 +10,18 @@ use App\Serializer\AutocompleteResultDTONormalizer;
 use App\Serializer\GenreDTONormalizer;
 use App\Serializer\MovieDTONormalizer;
 use App\Serializer\MovieListDTONormalizer;
+use App\Service\Interface\MovieServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class MovieService
+class MovieService implements MovieServiceInterface
 {
     public function __construct(
         private readonly TMDBApiService $tmdbApiService,
-        private AutocompleteResultDTONormalizer $autocompleteResultDTONormalizer,
-        private MovieDTONormalizer $movieDTONormalizer,
-        private GenreDTONormalizer $genreDTONormalizer,
-        private MovieListDTONormalizer $movieListDTONormalizer
+        private readonly AutocompleteResultDTONormalizer $autocompleteResultDTONormalizer,
+        private readonly MovieDTONormalizer $movieDTONormalizer,
+        private readonly GenreDTONormalizer $genreDTONormalizer,
+        private readonly MovieListDTONormalizer $movieListDTONormalizer,
     ) {
     }
 
@@ -31,6 +31,7 @@ class MovieService
      * @param Request $request La requête HTTP contenant les paramètres de filtrage
      *
      * @return array Les données des films et les métadonnées associées normalisées
+     * @throws ExceptionInterface
      */
     public function getMovies(Request $request): array
     {
@@ -96,6 +97,8 @@ class MovieService
      * @param int $id L'identifiant du film
      *
      * @return array Les détails du film normalisés
+     *
+     * @throws ExceptionInterface
      */
     public function getMovieDetails(int $id): array
     {
@@ -126,7 +129,7 @@ class MovieService
         }, $movies);
 
         return array_map(
-            fn(AutocompleteResultDTO $dto) => $this->autocompleteResultDTONormalizer->normalize($dto),
+            fn (AutocompleteResultDTO $dto) => $this->autocompleteResultDTONormalizer->normalize($dto),
             $dtos
         );
     }
@@ -157,11 +160,13 @@ class MovieService
     private function getGenresWithAll(): array
     {
         $genres = $this->tmdbApiService->getGenres();
-        $genreDTOs = array_map(function($genre) {
-            return new GenreDTO((string)$genre['id'], $genre['name']);
+        $genreDTOs = array_map(function ($genre) {
+            $dto = new GenreDTO((string) $genre['id'], $genre['name']);
+
+            return $this->genreDTONormalizer->normalize($dto);
         }, $genres);
 
-        array_unshift($genreDTOs, new GenreDTO('all', 'Tous les genres'));
+        array_unshift($genreDTOs, $this->genreDTONormalizer->normalize(new GenreDTO('all', 'Tous les genres')));
 
         return $genreDTOs;
     }
@@ -176,7 +181,6 @@ class MovieService
     private function getTrailerUrl(array $movieDetails): ?string
     {
         $videos = $movieDetails['videos']['results'] ?? [];
-        //dd($movieDetails);
         foreach ($videos as $video) {
             if ('YouTube' === $video['site']) {
                 return "https://www.youtube.com/embed/{$video['key']}";

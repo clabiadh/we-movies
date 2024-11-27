@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
-class TMDBApiService
+use App\Service\Interface\TMDBApiServiceInterface;
+
+class TMDBApiService implements TMDBApiServiceInterface
 {
     public function __construct(private readonly ApiDataService $apiDataService)
     {
@@ -31,10 +33,5 @@ class TMDBApiService
     public function getMovieDetails(int $movieId): array
     {
         return $this->apiDataService->getMovieDetails($movieId);
-    }
-
-    public function testConnection(): array
-    {
-        return $this->apiDataService->testConnection();
     }
 }
