@@ -26,6 +26,9 @@ class MovieDTO
         public readonly ?string $posterPath,
 
         #[Groups(['movie_details'])]
+        public readonly ?string $backdropPath,
+
+        #[Groups(['movie_details'])]
         public readonly ?string $trailerUrl,
 
         #[Groups(['movie_details'])]

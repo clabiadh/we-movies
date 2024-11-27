@@ -7,9 +7,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class MovieDTONormalizer implements NormalizerInterface
 {
-    /**
-     * @param MovieDTO $object
-     */
     public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         if (!$object instanceof MovieDTO) {
@@ -23,7 +20,10 @@ class MovieDTONormalizer implements NormalizerInterface
             'voteAverage' => $object->voteAverage,
             'voteCount' => $object->voteCount,
             'posterPath' => $object->posterPath,
+            'backdropPath' => $object->backdropPath,
             'trailerUrl' => $object->trailerUrl,
+            'releaseDate' => $object->releaseDate,
+            'releaseYear' => $object->getReleaseYear(),
         ];
     }
 

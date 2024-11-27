@@ -1,11 +1,11 @@
 <article class="movie-card" data-movie-id="{{ movie.id }}">
-    <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}" alt="{{ movie.title }}" class="movie-poster">
+    <img src="https://image.tmdb.org/t/p/w300{{ movie.posterPath }}" alt="{{ movie.title }}" class="movie-poster">
     <div class="movie-info">
         <div class="movie-header">
             <h3>{{ movie.title }}</h3>
             <div class="rating">
                 <div class="stars">
-                    {% set rating = movie.vote_average / 2 %}
+                    {% set rating = movie.voteAverage / 2 %}
                     {% for i in 1..5 %}
                         {% if i <= rating|round(0, 'floor') %}
                             <i class="fas fa-star"></i>
@@ -16,10 +16,10 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <span class="votes">({{ movie.vote_count }} votes)</span>
+                <span class="votes">({{ movie.voteCount }} votes)</span>
             </div>
         </div>
-        <span class="year">{{ movie.release_date|date('Y') }}</span>
+        <span class="year">{{ movie.releaseDate|date('Y') }}</span>
         <div class="user-rating" data-movie-id="{{ movie.id }}">
             <p>Votre note :</p>
             <div class="user-stars">

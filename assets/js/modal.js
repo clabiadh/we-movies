@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 modalTitle.textContent = data.title;
-                modalVotes.textContent = `(${data.vote_count} votes)`;
+                modalVotes.textContent = `(${data.voteCount} votes)`;
                 modalOverview.textContent = data.overview;
 
                 // Mise à jour des étoiles
-                const rating = data.vote_average / 2;
+                const rating = data.voteAverage / 2;
                 modalStars.innerHTML = '';
                 for (let i = 1; i <= 5; i++) {
                     const star = document.createElement('i');

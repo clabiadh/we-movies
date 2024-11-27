@@ -16,7 +16,6 @@ class MainController extends AbstractController
 {
     public function __construct(
         private readonly MovieService $movieService,
-        private readonly SerializerInterface $serializer,
     ) {
     }
 
@@ -47,10 +46,9 @@ class MainController extends AbstractController
     #[Route('/movie/{id}', name: 'movie_details')]
     public function movieDetails(int $id): JsonResponse
     {
-        $movieDTO = $this->movieService->getMovieDetails($id);
-        $jsonContent = $this->serializer->serialize($movieDTO, 'json', ['groups' => 'movie_details']);
+        $movieDetails = $this->movieService->getMovieDetails($id);
 
-        return new JsonResponse($jsonContent, 200, [], true);
+        return $this->json($movieDetails);
     }
 
     /**
@@ -60,7 +58,8 @@ class MainController extends AbstractController
     public function autocomplete(Request $request): JsonResponse
     {
         $query = $request->query->get('query', '');
+        $results = $this->movieService->autocompleteSearch($query);
 
-        return $this->json($this->movieService->autocompleteSearch($query));
+        return $this->json($results);
     }
 }

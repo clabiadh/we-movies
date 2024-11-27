@@ -4,15 +4,24 @@
 
 namespace App\Service;
 
+use App\DTO\AutocompleteResultDTO;
+use App\DTO\GenreDTO;
 use App\DTO\MovieDTO;
+use App\DTO\MovieListDTO;
+use App\Serializer\AutocompleteResultDTONormalizer;
+use App\Serializer\GenreDTONormalizer;
+use App\Serializer\MovieDTONormalizer;
+use App\Serializer\MovieListDTONormalizer;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class MovieService
 {
     public function __construct(
         private readonly TMDBApiService $tmdbApiService,
-        private readonly SerializerInterface $serializer,
+        private AutocompleteResultDTONormalizer $autocompleteResultDTONormalizer,
+        private MovieDTONormalizer $movieDTONormalizer,
+        private GenreDTONormalizer $genreDTONormalizer,
+        private MovieListDTONormalizer $movieListDTONormalizer
     ) {
     }
 
@@ -21,13 +30,13 @@ class MovieService
      *
      * @param Request $request La requête HTTP contenant les paramètres de filtrage
      *
-     * @return array Les données des films et les métadonnées associées
+     * @return array Les données des films et les métadonnées associées normalisées
      */
     public function getMovies(Request $request): array
     {
         $page = $request->query->getInt('page', 1);
         $search = $request->query->get('search');
-        $genre = $request->query->get('genre');
+        $genre = $request->query->get('genre', 'all');
 
         try {
             $moviesData = $this->fetchMoviesData($search, $genre, $page);
@@ -39,28 +48,46 @@ class MovieService
                 throw new \Exception('Aucun film trouvé');
             }
 
-            $genres = $this->getGenresWithAll();
+            $movieListDTO = new MovieListDTO(
+                featuredMovie: $featuredMovie ? $this->createMovieDTO($featuredMovie) : null,
+                movies: array_map([$this, 'createMovieDTO'], $movies),
+                currentPage: $page,
+                totalPages: $totalPages,
+                genres: $this->getGenresWithAll(), // Ceci retourne maintenant un tableau de GenreDTO
+                selectedGenre: $genre,
+                search: $search
+            );
 
-            return [
-                'featuredMovie' => $featuredMovie,
-                'movies' => $movies,
-                'currentPage' => $page,
-                'totalPages' => $totalPages,
-                'search' => $search,
-                'genres' => $genres,
-                'selectedGenre' => $genre ?? 'all',
-            ];
+            return $this->movieListDTONormalizer->normalize($movieListDTO);
         } catch (\Exception $e) {
-            // Log l'erreur ici si nécessaire
-            return [
-                'error' => $e->getMessage(),
-                'movies' => [],
-                'featuredMovie' => null,
-                'totalPages' => 1,
-                'genres' => $this->getGenresWithAll(),
-                'selectedGenre' => $genre ?? 'all',
-            ];
+            $movieListDTO = new MovieListDTO(
+                featuredMovie: null,
+                movies: [],
+                currentPage: $page,
+                totalPages: 1,
+                genres: $this->getGenresWithAll(), // Ceci retourne maintenant un tableau de GenreDTO
+                selectedGenre: $genre,
+                search: $search,
+                error: $e->getMessage()
+            );
+
+            return $this->movieListDTONormalizer->normalize($movieListDTO);
         }
+    }
+
+    private function createMovieDTO(array $movieData): MovieDTO
+    {
+        return new MovieDTO(
+            $movieData['id'],
+            $movieData['title'],
+            $movieData['overview'],
+            $movieData['vote_average'],
+            $movieData['vote_count'],
+            $movieData['poster_path'] ?? null,
+            $movieData['backdrop_path'] ?? null,
+            $this->getTrailerUrl($movieData),
+            $movieData['release_date'] ?? null
+        );
     }
 
     /**
@@ -68,22 +95,14 @@ class MovieService
      *
      * @param int $id L'identifiant du film
      *
-     * @return MovieDTO Les détails du film
+     * @return array Les détails du film normalisés
      */
-    public function getMovieDetails(int $id): MovieDTO
+    public function getMovieDetails(int $id): array
     {
         $movieDetails = $this->tmdbApiService->getMovieDetails($id);
+        $movieDTO = $this->createMovieDTO($movieDetails);
 
-        return new MovieDTO(
-            $movieDetails['id'],
-            $movieDetails['title'],
-            $movieDetails['overview'],
-            $movieDetails['vote_average'],
-            $movieDetails['vote_count'],
-            $movieDetails['poster_path'] ?? null,
-            $this->getTrailerUrl($movieDetails),
-            $movieDetails['release_date'] ?? null  // Ajout de la date de sortie
-        );
+        return $this->movieDTONormalizer->normalize($movieDTO);
     }
 
     /**
@@ -98,13 +117,18 @@ class MovieService
         $results = $this->tmdbApiService->searchMovies($query, 1);
         $movies = array_slice($results['results'], 0, 5); // Limite à 5 résultats
 
-        return array_map(function ($movie) {
-            return [
-                'id' => $movie['id'],
-                'title' => $movie['title'],
-                'year' => substr($movie['release_date'], 0, 4),
-            ];
+        $dtos = array_map(function ($movie) {
+            return new AutocompleteResultDTO(
+                id: $movie['id'],
+                title: $movie['title'],
+                year: substr($movie['release_date'], 0, 4)
+            );
         }, $movies);
+
+        return array_map(
+            fn(AutocompleteResultDTO $dto) => $this->autocompleteResultDTONormalizer->normalize($dto),
+            $dtos
+        );
     }
 
     /**
@@ -128,14 +152,18 @@ class MovieService
     /**
      * Récupère la liste des genres avec l'option "Tous les genres" en premier.
      *
-     * @return array La liste des genres
+     * @return GenreDTO[] La liste des genres
      */
     private function getGenresWithAll(): array
     {
         $genres = $this->tmdbApiService->getGenres();
-        array_unshift($genres, ['id' => 'all', 'name' => 'Tous les genres']);
+        $genreDTOs = array_map(function($genre) {
+            return new GenreDTO((string)$genre['id'], $genre['name']);
+        }, $genres);
 
-        return $genres;
+        array_unshift($genreDTOs, new GenreDTO('all', 'Tous les genres'));
+
+        return $genreDTOs;
     }
 
     /**
@@ -148,6 +176,7 @@ class MovieService
     private function getTrailerUrl(array $movieDetails): ?string
     {
         $videos = $movieDetails['videos']['results'] ?? [];
+        //dd($movieDetails);
         foreach ($videos as $video) {
             if ('YouTube' === $video['site']) {
                 return "https://www.youtube.com/embed/{$video['key']}";

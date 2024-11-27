@@ -35,3 +35,9 @@ services:
 
     App\Serializer\MovieDTONormalizer:
         tags: [ serializer.normalizer ]
+    App\Serializer\AutocompleteResultDTONormalizer:
+        tags: [ 'serializer.normalizer' ]
+    App\Serializer\GenreDTONormalizer:
+        tags: [ 'serializer.normalizer' ]
+    App\Serializer\MovieListDTONormalizer:
+        tags: [ 'serializer.normalizer' ]
