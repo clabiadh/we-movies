@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiDataService
 {
@@ -13,8 +13,9 @@ class ApiDataService
         private HttpClientInterface $tmdbClient,
         #[Autowire('%env(TMDB_API_TOKEN)%')]
         private string $apiToken,
-        private LoggerInterface $logger
-    ) {}
+        private LoggerInterface $logger,
+    ) {
+    }
 
     public function fetchData(string $endpoint, array $params = []): array
     {
@@ -27,7 +28,7 @@ class ApiDataService
             $response = $this->tmdbClient->request('GET', $endpoint, [
                 'query' => $params,
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->apiToken,
+                    'Authorization' => 'Bearer '.$this->apiToken,
                     'Accept' => 'application/json',
                 ],
             ]);
@@ -38,7 +39,7 @@ class ApiDataService
                 'endpoint' => $endpoint,
             ]);
 
-            if ($statusCode !== 200) {
+            if (200 !== $statusCode) {
                 $content = $response->getContent(false);
                 $this->logger->error('Error response from TMDB API', [
                     'statusCode' => $statusCode,

@@ -1,4 +1,5 @@
 <?php
+
 // src/Service/MovieService.php
 
 namespace App\Service;
@@ -11,13 +12,15 @@ class MovieService
 {
     public function __construct(
         private readonly TMDBApiService $tmdbApiService,
-        private readonly SerializerInterface $serializer
-    ) {}
+        private readonly SerializerInterface $serializer,
+    ) {
+    }
 
     /**
      * Récupère les films en fonction des paramètres de la requête.
      *
      * @param Request $request La requête HTTP contenant les paramètres de filtrage
+     *
      * @return array Les données des films et les métadonnées associées
      */
     public function getMovies(Request $request): array
@@ -64,6 +67,7 @@ class MovieService
      * Récupère les détails d'un film spécifique.
      *
      * @param int $id L'identifiant du film
+     *
      * @return MovieDTO Les détails du film
      */
     public function getMovieDetails(int $id): MovieDTO
@@ -86,6 +90,7 @@ class MovieService
      * Effectue une recherche de films pour l'autocomplétion.
      *
      * @param string $query Le terme de recherche
+     *
      * @return array Les résultats de la recherche formatés
      */
     public function autocompleteSearch(string $query): array
@@ -93,11 +98,11 @@ class MovieService
         $results = $this->tmdbApiService->searchMovies($query, 1);
         $movies = array_slice($results['results'], 0, 5); // Limite à 5 résultats
 
-        return array_map(function($movie) {
+        return array_map(function ($movie) {
             return [
                 'id' => $movie['id'],
                 'title' => $movie['title'],
-                'year' => substr($movie['release_date'], 0, 4)
+                'year' => substr($movie['release_date'], 0, 4),
             ];
         }, $movies);
     }
@@ -106,15 +111,16 @@ class MovieService
      * Récupère les données des films en fonction des critères de recherche.
      *
      * @param string|null $search Le terme de recherche
-     * @param string|null $genre L'identifiant du genre
-     * @param int $page Le numéro de page
+     * @param string|null $genre  L'identifiant du genre
+     * @param int         $page   Le numéro de page
+     *
      * @return array Les données des films
      */
     private function fetchMoviesData(?string $search, ?string $genre, int $page): array
     {
-        return match(true) {
+        return match (true) {
             !empty($search) => $this->tmdbApiService->searchMovies($search, $page),
-            !empty($genre) && $genre !== 'all' => $this->tmdbApiService->getMoviesByGenre($genre, $page),
+            !empty($genre) && 'all' !== $genre => $this->tmdbApiService->getMoviesByGenre($genre, $page),
             default => $this->tmdbApiService->getPopularMovies($page),
         };
     }
@@ -136,16 +142,18 @@ class MovieService
      * Extrait l'URL de la bande-annonce des détails du film.
      *
      * @param array $movieDetails Les détails du film
+     *
      * @return string|null L'URL de la bande-annonce YouTube ou null si non trouvée
      */
     private function getTrailerUrl(array $movieDetails): ?string
     {
         $videos = $movieDetails['videos']['results'] ?? [];
         foreach ($videos as $video) {
-            if ($video['site'] === 'YouTube') {
+            if ('YouTube' === $video['site']) {
                 return "https://www.youtube.com/embed/{$video['key']}";
             }
         }
+
         return null;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 // src/Controller/MainController.php
 
 namespace App\Controller;
@@ -15,8 +16,9 @@ class MainController extends AbstractController
 {
     public function __construct(
         private readonly MovieService $movieService,
-        private readonly SerializerInterface $serializer
-    ) {}
+        private readonly SerializerInterface $serializer,
+    ) {
+    }
 
     /**
      * Page d'accueil affichant la liste des films.

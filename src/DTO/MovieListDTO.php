@@ -14,6 +14,7 @@ class MovieListDTO
         public readonly int $totalPages,
         public readonly ?string $search,
         public readonly array $genres,
-        public readonly string $selectedGenre
-    ) {}
+        public readonly string $selectedGenre,
+    ) {
+    }
 }

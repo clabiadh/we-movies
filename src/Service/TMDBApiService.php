@@ -4,7 +4,9 @@ namespace App\Service;
 
 class TMDBApiService
 {
-    public function __construct(private readonly ApiDataService $apiDataService) {}
+    public function __construct(private readonly ApiDataService $apiDataService)
+    {
+    }
 
     public function getPopularMovies(int $page = 1): array
     {

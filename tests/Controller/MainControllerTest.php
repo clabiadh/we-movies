@@ -1,4 +1,5 @@
 <?php
+
 // tests/Controller/MainControllerTest.php
 
 namespace App\Tests\Controller;

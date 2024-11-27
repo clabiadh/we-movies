@@ -10,7 +10,7 @@ class MovieDTONormalizer implements NormalizerInterface
     /**
      * @param MovieDTO $object
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         if (!$object instanceof MovieDTO) {
             throw new \InvalidArgumentException('The object must be an instance of MovieDTO');
@@ -27,7 +27,7 @@ class MovieDTONormalizer implements NormalizerInterface
         ];
     }
 
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof MovieDTO;
     }

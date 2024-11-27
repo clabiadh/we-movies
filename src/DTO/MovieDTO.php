@@ -29,12 +29,13 @@ class MovieDTO
         public readonly ?string $trailerUrl,
 
         #[Groups(['movie_details'])]
-        public readonly ?string $releaseDate
-    ) {}
+        public readonly ?string $releaseDate,
+    ) {
+    }
 
     #[Groups(['movie_details'])]
     public function getReleaseYear(): ?int
     {
-        return $this->releaseDate ? (int)substr($this->releaseDate, 0, 4) : null;
+        return $this->releaseDate ? (int) substr($this->releaseDate, 0, 4) : null;
     }
 }

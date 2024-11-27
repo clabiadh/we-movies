@@ -57,4 +57,25 @@ Pour exécuter les tests unitaires : docker-compose exec php bin/phpunit
 
 Les contributions sont les bienvenues ! Veuillez créer une issue ou une pull request pour toute suggestion ou amélioration.
 
+## Outils de Qualité de Code
+
+### PHPStan
+
+PHPStan est un outil d'analyse statique qui aide à détecter les bugs dans votre code PHP.
+
+Pour exécuter PHPStan : docker-compose exec php composer phpstan
+
+
+### PHP CS Fixer
+
+PHP CS Fixer est un outil qui aide à maintenir un style de code cohérent dans votre projet PHP.
+
+Pour vérifier le style de code sans appliquer les corrections : docker-compose exec php composer cs-check
+
+Pour appliquer automatiquement les corrections de style : docker-compose exec php composer cs-fix
+
+
+
+
+
 
