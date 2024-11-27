@@ -218,6 +218,22 @@ docker-compose exec php composer cs-check
 docker-compose exec php composer cs-fix
 ```
 
+### PHP_CodeSniffer
+Pour Symfony 7, il est effectivement recommandé d'utiliser PSR-12 avec PHP_CodeSniffer. Voici pourquoi :
+
+1. PSR-12 est la norme la plus récente et la plus complète pour le style de codage PHP. Elle étend et remplace PSR-2, qui était précédemment utilisé.
+2. Symfony suit de près les standards PSR et recommande leur utilisation. Bien que Symfony ait ses propres conventions de codage, elles sont largement basées sur PSR-12.
+3. PSR-12 est compatible avec les versions PHP modernes, ce qui correspond bien à Symfony 7 qui utilise PHP 8.2+.
+4. Il couvre un large éventail de règles de style, y compris l'utilisation des nouvelles fonctionnalités de PHP comme les types de retour nullable, les types d'union, etc.
+
+```shellscript
+# Vérification du style
+docker-compose exec php composer phpcs
+
+# Correction automatique
+docker-compose exec php composer phpcbf
+```
+
 ## Contribution
 
 Les contributions sont les bienvenues ! Veuillez :

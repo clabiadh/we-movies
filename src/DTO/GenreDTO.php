@@ -9,7 +9,6 @@ class GenreDTO
     public function __construct(
         #[Groups(['genre'])]
         public readonly string $id,
-
         #[Groups(['genre'])]
         public readonly string $name,
     ) {

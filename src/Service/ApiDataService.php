@@ -29,7 +29,7 @@ class ApiDataService implements ApiDataServiceInterface
             $response = $this->tmdbClient->request('GET', $endpoint, [
                 'query' => $params,
                 'headers' => [
-                    'Authorization' => 'Bearer '.$this->apiToken,
+                    'Authorization' => 'Bearer ' . $this->apiToken,
                     'Accept' => 'application/json',
                 ],
             ]);
