@@ -33,7 +33,7 @@ class MovieListDTO
         public readonly ?string $search = null,
 
         #[Groups(['movie_list'])]
-        public readonly ?string $error = null
+        public readonly ?string $error = null,
     ) {
     }
 }
