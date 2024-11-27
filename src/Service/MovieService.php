@@ -163,7 +163,7 @@ class MovieService implements MovieServiceInterface
     /**
      * Récupère la liste des genres avec l'option "Tous les genres" en premier.
      *
-     * @return GenreDTO[] La liste des genres
+     * @return array La liste des genres
      */
     private function getGenresWithAll(): array
     {
