@@ -125,6 +125,80 @@ testConnection(): array
 docker-compose exec php bin/phpunit
 ```
 
+### Tests Fonctionnels
+
+Les tests fonctionnels sont une partie cruciale de notre suite de tests. Ils vérifient le comportement de l'application du point de vue de l'utilisateur final, en simulant des interactions réelles avec l'interface utilisateur.
+
+Pour exécuter les tests fonctionnels :
+
+```shellscript
+docker-compose exec php bin/phpunit tests/
+ou
+php bin/phpunit --no-coverage tests/Controller/MainControllerTest.php > rapport_tests.txt
+
+avec ou non l'option  --colors=never
+```
+
+Nos tests fonctionnels couvrent plusieurs scénarios, notamment :
+
+- Navigation sur la page d'accueil
+- Recherche de films
+- Filtrage par genre
+- Affichage des détails d'un film
+- Fonctionnalité d'autocomplétion
+
+
+### Principe de Mock dans les Tests
+
+Le mocking est une technique essentielle dans nos tests unitaires et fonctionnels. Elle nous permet de simuler le comportement de dépendances externes ou de composants complexes de notre application.
+
+Principaux avantages du mocking dans notre projet :
+
+1. **Isolation des composants** : Nous pouvons tester des parties spécifiques de notre application sans dépendre du bon fonctionnement d'autres composants.
+2. **Contrôle des scénarios de test** : Les mocks nous permettent de simuler différentes réponses de l'API TMDB, y compris des cas d'erreur, sans avoir à manipuler l'API réelle.
+3. **Rapidité et fiabilité des tests** : En évitant les appels réseau réels, nos tests s'exécutent plus rapidement et de manière plus fiable.
+4. **Reproduction de scénarios spécifiques** : Nous pouvons facilement reproduire des scénarios difficiles à obtenir avec l'API réelle.
+
+
+Exemple de mock dans un de nos tests :
+
+```php
+public function testMovieSearch()
+{
+    $mockTMDBApiService = $this->createMock(TMDBApiServiceInterface::class);
+    $mockTMDBApiService->method('searchMovies')
+        ->willReturn([
+            'results' => [
+                [
+                    'id' => 11,
+                    'title' => 'Star Wars',
+                    'release_date' => '1977-05-25',
+                    'vote_average' => 8.6,
+                    'poster_path' => '/path/to/poster.jpg'
+                ],
+                // ... autres résultats de films
+            ]
+        ]);
+
+    $movieService = new MovieService($mockTMDBApiService);
+    $result = $movieService->searchMovies('Star Wars');
+
+    $this->assertCount(1, $result);
+    $this->assertEquals('Star Wars', $result[0]['title']);
+    $this->assertEquals(1977, $result[0]['year']);
+}
+```
+
+Dans cet exemple :
+
+1. Nous créons un mock du `TMDBApiService`.
+2. Nous définissons le comportement attendu de la méthode `searchMovies`.
+3. Nous injectons ce mock dans notre `MovieService`.
+4. Nous testons la méthode `searchMovies` du `MovieService` sans effectuer d'appel API réel.
+
+
+Cette approche nous permet de tester la logique de notre `MovieService` indépendamment de l'API TMDB, assurant ainsi des tests rapides, fiables et reproductibles.
+
 ## Qualité du Code
 
 ### PHPStan

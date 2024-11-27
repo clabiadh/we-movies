@@ -31,6 +31,7 @@ class MovieService implements MovieServiceInterface
      * @param Request $request La requête HTTP contenant les paramètres de filtrage
      *
      * @return array Les données des films et les métadonnées associées normalisées
+     *
      * @throws ExceptionInterface
      */
     public function getMovies(Request $request): array
@@ -145,11 +146,18 @@ class MovieService implements MovieServiceInterface
      */
     private function fetchMoviesData(?string $search, ?string $genre, int $page): array
     {
-        return match (true) {
+        $data = match (true) {
             !empty($search) => $this->tmdbApiService->searchMovies($search, $page),
             !empty($genre) && 'all' !== $genre => $this->tmdbApiService->getMoviesByGenre($genre, $page),
             default => $this->tmdbApiService->getPopularMovies($page),
         };
+
+        // Assurez-vous que 'results' existe toujours dans les données retournées
+        if (!isset($data['results'])) {
+            $data['results'] = [];
+        }
+
+        return $data;
     }
 
     /**
